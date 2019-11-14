@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Implementation of Graham scan algorithm which finds a convex hull given a set of points.
+Implementation of Graham scan algorithm which finds a convex hull given a set
+of points.
 Created on Wed Nov 13 15:03:33 2019
 
 @author: karthikkr
@@ -21,7 +22,8 @@ class GrahamScan():
         initialization
         """
         self.data = PlyData.read(plyfile)
-        self.P = list(zip(self.data.elements[0].data["x"], self.data.elements[0].data["y"]))
+        self.P = list(zip(self.data.elements[0].data["x"],\
+                          self.data.elements[0].data["y"]))
 
     def delete(self, index, _list):
         """
@@ -34,7 +36,8 @@ class GrahamScan():
         """
         gets the angle between three points
         """
-        ang = math.degrees(math.atan2(c[1]-b[1], c[0]-b[0]) - math.atan2(a[1]-b[1], a[0]-b[0]))
+        ang = math.degrees(math.atan2(c[1]-b[1], \
+                            c[0]-b[0]) - math.atan2(a[1]-b[1], a[0]-b[0]))
         return ang + 360 if ang < 0 else ang
 
     def upper_hull(self):
@@ -48,7 +51,8 @@ class GrahamScan():
         for i in range(3, len(self.P)):
             l_upper.append(self.P[i])
 
-            while((len(l_upper)> 2) and self.get_angle(l_upper[-3], l_upper[-2], l_upper[-1]) > 180):
+            while((len(l_upper)> 2) and self.get_angle(l_upper[-3], \
+                  l_upper[-2], l_upper[-1]) > 180):
                 self.delete([-2], l_upper)
         return l_upper
 
@@ -61,7 +65,8 @@ class GrahamScan():
         for i in range(3, len(P)):
             l_lower.append(P[i])
 
-            while((len(l_lower)> 2) and self.get_angle(l_lower[-3], l_lower[-2], l_lower[-1]) > 180):
+            while((len(l_lower)> 2) and self.get_angle(l_lower[-3], \
+                  l_lower[-2], l_lower[-1]) > 180):
                 self.delete([-2], l_lower)
 
         # delete first and last point in l_lower
@@ -79,8 +84,12 @@ class GrahamScan():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Gram Scan Algorithm')
-    parser.add_argument('FILE', metavar='FILE', help='path to the .ply file.')
+    parser = argparse.ArgumentParser(description=\
+                            'Graham Scan Algorithm for finding convex hull')
+    parser.add_argument('FILE', metavar='FILE', \
+                        help='path to the input .ply file.')
+    parser.add_argument('-f', metavar='OUTFILE', default = 'output.ply', \
+        help='path to the .ply file to which the output has to be written.')
     args = parser.parse_args()
     
     # gramscanalgorithm
@@ -93,6 +102,11 @@ if __name__ == "__main__":
 
     y_points = [i[1] for i in ch]
     y_points.append(y_points[0])
+
+    # save the ply file
+    vertex = np.array(ch, dtype=[('x', 'f4'), ('y', 'f4')])
+    element = PlyElement.describe(vertex, 'vertex')
+    PlyData([element],  text=True).write(args.f)
 
     # plot the graph
     plt.scatter(gs.data.elements[0].data["x"], gs.data.elements[0].data["y"])
