@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Implementation of Graham scan algorithm which finds a convex hull given a set of points.
 Created on Wed Nov 13 15:03:33 2019
 
 @author: karthikkr
@@ -11,15 +12,16 @@ import math
 import argparse
 
 from plyfile import PlyData, PlyElement
+from matplotlib import animation
 
-class GramScan():
+class GrahamScan():
 
     def __init__(self, plyfile):
         """
         initialization
         """
-        data = PlyData.read(plyfile)
-        self.P = list(zip(data.elements[0].data["x"], data.elements[0].data["y"]))
+        self.data = PlyData.read(plyfile)
+        self.P = list(zip(self.data.elements[0].data["x"], self.data.elements[0].data["y"]))
 
     def delete(self, index, _list):
         """
@@ -66,7 +68,7 @@ class GramScan():
         self.delete([0, -1], l_lower)
         return l_lower
 
-    def gram_scan(self):
+    def graham_scan(self):
         """
         complete gramscanalgorithm
         """
@@ -75,22 +77,24 @@ class GramScan():
 
         return upper_hull + lower_hull
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Gram Scan Algorithm')
     parser.add_argument('FILE', metavar='FILE', help='path to the .ply file.')
     args = parser.parse_args()
     
     # gramscanalgorithm
-    gs = GramScan(args.FILE)
-    
-    # plot figure 
-    figure = gs.gram_scan()
-    
-    x_points=[i[0] for i in figure]
+    gs = GrahamScan(args.FILE)
+    # get the convex hull
+    ch = gs.graham_scan()
+
+    x_points = [i[0] for i in ch]
     x_points.append(x_points[0])
-    
-    y_points=[i[1] for i in figure]
+
+    y_points = [i[1] for i in ch]
     y_points.append(y_points[0])
-    
-    plt.plot(x_points, y_points)
+
+    # plot the graph
+    plt.scatter(gs.data.elements[0].data["x"], gs.data.elements[0].data["y"])
+    plt.plot(x_points, y_points, color = "black")
     plt.show()
