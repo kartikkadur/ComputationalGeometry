@@ -1,0 +1,11 @@
+ply
+format ascii 1.0
+element vertex 5
+property double x
+property double y
+end_header
+0 0
+100 0
+100 100
+0 100
+50 50
